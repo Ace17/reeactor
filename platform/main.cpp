@@ -7,6 +7,7 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
 
 // About Desktop OpenGL function loaders:

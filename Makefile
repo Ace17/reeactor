@@ -1,3 +1,9 @@
+
+CROSS_COMPILE?=
+ifneq (,$(CROSS_COMPILE))
+CXX:=$(CROSS_COMPILE)g++
+endif
+
 BIN?=bin
 CXXFLAGS+=-Iimgui -Iglad -Isrc -I.
 
