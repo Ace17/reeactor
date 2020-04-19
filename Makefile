@@ -1,10 +1,10 @@
 BIN?=bin
-CXXFLAGS+=-Iimgui -Iglad -I.
+CXXFLAGS+=-Iimgui -Iglad -Isrc -I.
 
 CXXFLAGS+=$(shell pkg-config sdl2 --cflags)
 LDFLAGS+=$(shell pkg-config sdl2 --libs)
 
-CXXFLAGS+=-DIMGUI_IMPL_OPENGL_LOADER_GLAD 
+CXXFLAGS+=-DIMGUI_IMPL_OPENGL_LOADER_GLAD
 
 HOST:=$(shell $(CXX) -dumpmachine | sed 's/.*-//')
 
@@ -16,9 +16,12 @@ SRCS:=\
 	imgui/imgui_demo.cpp\
 	imgui/imgui_draw.cpp\
 	imgui/imgui_widgets.cpp\
-	imgui_impl_opengl3.cpp\
-	imgui_impl_sdl.cpp\
-	main.cpp\
+	platform/imgui_impl_opengl3.cpp\
+	platform/imgui_impl_sdl.cpp\
+	platform/main.cpp\
+	src/simuflow.cpp\
+	src/game.cpp\
+	src/app.cpp\
 
 all: $(BIN)/game.exe
 
