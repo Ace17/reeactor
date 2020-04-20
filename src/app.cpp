@@ -144,11 +144,13 @@ void AppFrame(ImVec2 size)
 
   {
     const auto origin = ImVec2(H, 0);
-    const auto mousePos = absMousePos - origin;
     ImGui::SetNextWindowPos(origin);
     ImGui::SetNextWindowSize(ImVec2(size.x - H, size.y));
     ImGui::SetNextWindowBgAlpha(0.1);
     ImGui::Begin("Reactor diagram", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+    const auto scrollPos = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
+    const auto mousePos = absMousePos - origin + scrollPos;
 
     ImGui::SetCursorPos({});
     ImGui::Image((void*)textureBackground, ImVec2(1024, 1024));
@@ -221,7 +223,7 @@ void AppFrame(ImVec2 size)
       if(g_debug)
       {
         uint8_t red = (int)clamp(entity->temperature(), 0, 255);
-        ImGui::GetWindowDrawList()->AddRectFilled(origin + entityPos, origin + entityPos + entitySize, 0x80000000 | red);
+        ImGui::GetWindowDrawList()->AddRectFilled(origin - scrollPos + entityPos, origin - scrollPos + entityPos + entitySize, 0x80000000 | red);
         ImGui::SetCursorPos(entityPos);
         ImGui::Text("P=%.2f", entity->pressure());
         ImGui::SetCursorPos(entityPos + ImVec2(0, -16));
