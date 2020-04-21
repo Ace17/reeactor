@@ -5,7 +5,7 @@ CXX:=$(CROSS_COMPILE)g++
 endif
 
 BIN?=bin
-CXXFLAGS+=-Iimgui -Iglad -Isrc -I.
+CXXFLAGS+=-Iextra/imgui -Iextra -Isrc -I.
 
 CXXFLAGS+=$(shell pkg-config sdl2 --cflags)
 LDFLAGS+=$(shell pkg-config sdl2 --libs)
@@ -17,17 +17,19 @@ HOST:=$(shell $(CXX) -dumpmachine | sed 's/.*-//')
 -include $(HOST).mk
 
 SRCS:=\
-	glad/glad.cpp\
-	imgui/imgui.cpp\
-	imgui/imgui_demo.cpp\
-	imgui/imgui_draw.cpp\
-	imgui/imgui_widgets.cpp\
-	platform/imgui_impl_opengl3.cpp\
-	platform/imgui_impl_sdl.cpp\
-	platform/main.cpp\
-	src/simuflow.cpp\
-	src/game.cpp\
 	src/app.cpp\
+	src/game.cpp\
+	src/simuflow.cpp\
+	src/platform/imgui_impl_opengl3.cpp\
+	src/platform/imgui_impl_sdl.cpp\
+	src/platform/main.cpp\
+
+SRCS+=\
+	extra/glad/glad.cpp\
+	extra/imgui/imgui.cpp\
+	extra/imgui/imgui_demo.cpp\
+	extra/imgui/imgui_draw.cpp\
+	extra/imgui/imgui_widgets.cpp\
 
 all: $(BIN)/game.exe
 
