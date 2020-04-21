@@ -33,13 +33,18 @@ SRCS+=\
 
 all: $(BIN)/game.exe
 
-$(BIN)/game.exe: $(SRCS:%=$(BIN)/%.o)
+#------------------------------------------------------------------------------
+
+$(BIN)/%.exe: $(SRCS:%=$(BIN)/%.o)
 	@mkdir -p $(dir $@)
 	$(CXX) -o "$@" $^ $(LDFLAGS)
 
 $(BIN)/%.cpp.o: %.cpp
 	@mkdir -p $(dir $@)
+	@$(CXX) -MM -MT "$@" -c -o "$(BIN)/$*.cpp.o.dep" $< $(CXXFLAGS)
 	$(CXX) -c -o "$@" $< $(CXXFLAGS)
+
+-include $(shell test -d $(BIN) && find $(BIN) -name "*.dep")
 
 clean:
 	rm -rf $(BIN)
