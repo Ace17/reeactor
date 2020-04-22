@@ -775,6 +775,8 @@ void ImGui_ImplOpenGL3_DestroyDeviceObjects()
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <stdexcept>
+#include <string>
 
 // Simple helper function to load an image into a OpenGL texture with common settings
 intptr_t LoadTextureFromFile(const char* filename)
@@ -783,6 +785,10 @@ intptr_t LoadTextureFromFile(const char* filename)
   int image_width = 0;
   int image_height = 0;
   unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+
+  if(!image_data)
+    throw std::runtime_error(std::string("Can't load: '") + filename);
+
   assert(image_data);
 
   // Create a OpenGL texture identifier
