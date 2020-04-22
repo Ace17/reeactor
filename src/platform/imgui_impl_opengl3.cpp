@@ -777,7 +777,7 @@ void ImGui_ImplOpenGL3_DestroyDeviceObjects()
 #include "stb_image.h"
 
 // Simple helper function to load an image into a OpenGL texture with common settings
-intptr_t LoadTextureFromFile(const char* filename, int& out_width, int& out_height)
+intptr_t LoadTextureFromFile(const char* filename)
 {
   // Load from file
   int image_width = 0;
@@ -798,9 +798,6 @@ intptr_t LoadTextureFromFile(const char* filename, int& out_width, int& out_heig
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
   stbi_image_free(image_data);
-
-  out_width = image_width;
-  out_height = image_height;
 
   return image_texture;
 }

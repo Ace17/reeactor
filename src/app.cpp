@@ -36,10 +36,9 @@ auto toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
 
 void AppInit()
 {
-  int w, h;
-  textureSelection = LoadTextureFromFile("data/rect.png", w, h);
-  textureBackground = LoadTextureFromFile("data/full.png", w, h);
-  textureHover = LoadTextureFromFile("data/hover.png", w, h);
+  textureSelection = LoadTextureFromFile("data/rect.png");
+  textureBackground = LoadTextureFromFile("data/full.png");
+  textureHover = LoadTextureFromFile("data/hover.png");
 
   GameInit();
 }
@@ -50,8 +49,7 @@ intptr_t getTexture(const char* path)
 
   if(i == textures.end())
   {
-    int w, h;
-    textures[path] = LoadTextureFromFile(path, w, h);
+    textures[path] = LoadTextureFromFile(path);
     i = textures.find(path);
   }
 
