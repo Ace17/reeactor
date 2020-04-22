@@ -80,7 +80,7 @@ struct ETurbine : Entity
 {
   void tick() override
   {
-    section->T *= 0.99; // heat dissipation
+    section->T = blend(0.99, section->T, 20.0); // heat dissipation
 
     if(section->T > 25)
       speed += section->T * 0.001;
