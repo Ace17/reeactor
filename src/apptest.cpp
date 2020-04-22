@@ -11,6 +11,7 @@
 
 namespace
 {
+  Circuit g_circuit;
 ///////////////////////////////////////////////////////////////////////////////
 // ImVec2 primitives
 
@@ -37,14 +38,28 @@ void mainWindow(ImVec2 size)
   static double t = 0;
   t += 0.01;
 
-  for(int i = 0; i < 20; ++i)
   {
+    auto& s = g_circuit.sections.front();
+    ImGui::SliderFloat("SelfFlux", &s.selfFlux, 0, 10000);
+  }
+
+  static std::vector<float> u;
+  u.resize(g_circuit.sections.size());
+
+  for(int i = 0; i < (int)g_circuit.sections.size(); ++i)
+  {
+    auto& s = g_circuit.sections[i];
+
+    u[i] += s.flux0 * 0.01;
+    if(u[i] > 1.0)
+      u[i] -= 1.0;
+
     ImGui::SetCursorPos(pos);
-    auto uv0 = ImVec2(0 - t, 0);
-    auto uv1 = ImVec2(1 - t, 1);
+    auto uv0 = ImVec2(0 - u[i], 0);
+    auto uv1 = ImVec2(1 - u[i], 1);
     ImGui::Image((void*)textureFlow, ImVec2(64, 64), uv0, uv1);
 
-    uint8_t red = 10 * i;
+    uint8_t red = clamp(s.T, 0, 255);
     ImGui::GetWindowDrawList()->AddRectFilled(pos, pos + ImVec2(64, 64), 0x80000000 | red);
 
     pos.x += 64 + 1;
@@ -57,10 +72,32 @@ void mainWindow(ImVec2 size)
 void AppInit()
 {
   textureFlow = LoadTextureFromFile("data/flow.png");
+
+  g_circuit.sections.resize(20);
+
+  for(auto& s : g_circuit.sections)
+  {
+    s.n = 1000;
+    s.T = 25;
+  }
+
+  for(int i=0;i+1 < (int)g_circuit.sections.size();++i)
+  {
+    connectSections(
+        g_circuit,
+        g_circuit.sections[i],
+        g_circuit.sections[i+1]);
+  }
+
+  connectSections(
+      g_circuit,
+      g_circuit.sections.back(),
+      g_circuit.sections.front());
 }
 
 void AppFrame(ImVec2 size)
 {
+  simulate(g_circuit);
   mainWindow(size);
 }
 
