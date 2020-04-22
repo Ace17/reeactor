@@ -1,5 +1,7 @@
 #pragma once
 
+// game logic, as seen by the rest of the program
+
 #include "imgui.h" // ImVec2
 #include <vector>
 #include <string>

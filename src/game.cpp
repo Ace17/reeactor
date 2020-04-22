@@ -1,5 +1,5 @@
 #include <memory>
-#include "entities.h"
+#include "game.h"
 #include "simuflow.h"
 
 std::vector<std::unique_ptr<Entity>> g_entities;
