@@ -2,16 +2,21 @@
 
 // game logic, as seen by the rest of the program
 
-#include "imgui.h" // ImVec2
 #include <vector>
 #include <string>
 #include <memory>
 
-using Vec2f = ImVec2;
+struct Vec2f
+{
+  Vec2f() = default;
+  Vec2f(float x_, float y_) : x(x_), y(y_) {}
+  float x {};
+  float y {};
+};
 
-inline ImVec2 operator + (ImVec2 a, ImVec2 b) { return ImVec2(a.x + b.x, a.y + b.y); }
-inline ImVec2 operator * (ImVec2 a, float b) { return ImVec2(a.x * b, a.y * b); }
-inline ImVec2 operator - (ImVec2 a, ImVec2 b) { return ImVec2(a.x - b.x, a.y - b.y); }
+inline Vec2f operator + (Vec2f a, Vec2f b) { return Vec2f(a.x + b.x, a.y + b.y); }
+inline Vec2f operator * (Vec2f a, float b) { return Vec2f(a.x * b, a.y * b); }
+inline Vec2f operator - (Vec2f a, Vec2f b) { return Vec2f(a.x - b.x, a.y - b.y); }
 
 inline float clamp(float val, float min, float max)
 {

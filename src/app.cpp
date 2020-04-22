@@ -28,6 +28,12 @@ intptr_t textureHover;
 
 Entity* g_selection;
 
+inline ImVec2 operator + (ImVec2 a, ImVec2 b) { return ImVec2(a.x + b.x, a.y + b.y); }
+inline ImVec2 operator * (ImVec2 a, float b) { return ImVec2(a.x * b, a.y * b); }
+inline ImVec2 operator - (ImVec2 a, ImVec2 b) { return ImVec2(a.x - b.x, a.y - b.y); }
+
+auto toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
+
 void AppInit()
 {
   int w, h;
@@ -160,8 +166,8 @@ void AppFrame(ImVec2 size)
 
     for(auto& entity : g_entities)
     {
-      auto entityPos = entity->pos * SCALE;
-      auto entitySize = entity->size() * SCALE;
+      ImVec2 entityPos = toImVec2(entity->pos) * SCALE;
+      ImVec2 entitySize = toImVec2(entity->size()) * SCALE;
 
       ImGui::SetCursorPos(entityPos);
       ImGui::Image((void*)getTexture("data/pipe.png"), entitySize);
