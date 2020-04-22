@@ -7,7 +7,10 @@
 #include <map>
 #include "SDL.h"
 
-bool isPointInRect(ImVec2 point, ImVec2 rectPos, ImVec2 rectSize)
+///////////////////////////////////////////////////////////////////////////////
+// ImVec2 primitives
+
+inline bool isPointInRect(ImVec2 point, ImVec2 rectPos, ImVec2 rectSize)
 {
   if(point.x < rectPos.x || point.x >= rectPos.x + rectSize.x)
     return false;
@@ -18,21 +21,22 @@ bool isPointInRect(ImVec2 point, ImVec2 rectPos, ImVec2 rectSize)
   return true;
 }
 
+inline ImVec2 operator + (ImVec2 a, ImVec2 b) { return ImVec2(a.x + b.x, a.y + b.y); }
+inline ImVec2 operator * (ImVec2 a, float b) { return ImVec2(a.x * b, a.y * b); }
+inline ImVec2 operator - (ImVec2 a, ImVec2 b) { return ImVec2(a.x - b.x, a.y - b.y); }
+
+///////////////////////////////////////////////////////////////////////////////
+
 const float SCALE = 64.0;
 
 std::map<const char*, intptr_t> textures;
-
 intptr_t textureSelection;
 intptr_t textureBackground;
 intptr_t textureHover;
 
 Entity* g_selection;
 
-inline ImVec2 operator + (ImVec2 a, ImVec2 b) { return ImVec2(a.x + b.x, a.y + b.y); }
-inline ImVec2 operator * (ImVec2 a, float b) { return ImVec2(a.x * b, a.y * b); }
-inline ImVec2 operator - (ImVec2 a, ImVec2 b) { return ImVec2(a.x - b.x, a.y - b.y); }
-
-auto toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
+ImVec2 toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
 
 void AppInit()
 {
