@@ -48,7 +48,7 @@ void simulate(Circuit& circuit)
 
     // update s1 temperature
     if(flux > 0)
-      s1->T = (s1->T * s1->n + s0->T * flux)/(s1->n + flux);
+      s1->T = (s1->T * s1->n + s0->T * flux) / (s1->n + flux);
 
     assert(s1->T == s1->T);
     assert(s1->T >= 0);

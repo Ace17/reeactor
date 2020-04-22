@@ -55,6 +55,7 @@ struct EReactor : Entity
   {
     section->T += 4.0 * controlRods;
     temperature = section->T;
+
     if(section->T > 300)
       g_finishMessage = "YOU LOSE: THE CORE HAS MOLTEN";
   }
@@ -285,15 +286,6 @@ struct EValve : Entity
 
   float open = 1.0;
 };
-}
-
-void GameTick()
-{
-  simulate(g_circuit);
-
-  for(auto& entity : g_entities)
-    entity->tick();
-}
 
 template<typename T>
 T* Spawn(std::unique_ptr<T> entity)
@@ -306,9 +298,6 @@ T* Spawn(std::unique_ptr<T> entity)
   g_entities.push_back(std::move(entity));
   return r;
 }
-
-void buildPrimaryCircuit(EHeatExchanger* HeatExchanger);
-void buildSecondaryCircuit(EHeatExchanger* HeatExchanger);
 
 void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
 {
@@ -377,28 +366,28 @@ void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
   // --------------------------------------
 
   connect({
-    MainPrimary,
-    FlowMeter,
-    ColdPressure,
-    PreValve1,
-    Pump1,
-    PostValve1,
-    ColdHeatSensor,
-    ReactorCore,
-    HotHeatSensor,
-    HotPressure,
-    HotFlow,
-    HeatExchanger,
-    MainPrimary });
+      MainPrimary,
+      FlowMeter,
+      ColdPressure,
+      PreValve1,
+      Pump1,
+      PostValve1,
+      ColdHeatSensor,
+      ReactorCore,
+      HotHeatSensor,
+      HotPressure,
+      HotFlow,
+      HeatExchanger,
+      MainPrimary });
 
   // redundant pump
   connect({
-    ColdPressure,
-    PreValve2,
-    Pump2,
-    PostValve2,
-    ColdHeatSensor,
-  });
+      ColdPressure,
+      PreValve2,
+      Pump2,
+      PostValve2,
+      ColdHeatSensor,
+    });
 }
 
 void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
@@ -480,12 +469,13 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
 
   // redundant pump
   connect({
-    ColdPressure,
-    PreValve2,
-    Pump2,
-    PostValve2,
-    ColdHeatSensor,
-  });
+      ColdPressure,
+      PreValve2,
+      Pump2,
+      PostValve2,
+      ColdHeatSensor,
+    });
+}
 }
 
 void GameInit()
@@ -506,6 +496,14 @@ void GameInit()
 
   buildPrimaryCircuit(PrimaryHeatExchanger);
   buildSecondaryCircuit(SecondaryHeatExchanger);
+}
+
+void GameTick()
+{
+  simulate(g_circuit);
+
+  for(auto& entity : g_entities)
+    entity->tick();
 }
 
 const char* IsGameFinished()
