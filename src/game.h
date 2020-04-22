@@ -47,6 +47,7 @@ struct Section;
 
 struct Entity
 {
+  virtual ~Entity() = default;
   Vec2f pos {};
   std::string id;
   Section* section = nullptr;
