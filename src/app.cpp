@@ -7,6 +7,8 @@
 #include <map>
 #include "SDL.h"
 
+namespace
+{
 ///////////////////////////////////////////////////////////////////////////////
 // ImVec2 primitives
 
@@ -55,15 +57,6 @@ Entity* g_selection;
 bool g_debug;
 
 ImVec2 toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
-
-void AppInit()
-{
-  textureSelection = getTexture("data/rect.png");
-  textureBackground = getTexture("data/full.png");
-  textureHover = getTexture("data/hover.png");
-
-  GameInit();
-}
 
 inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)
 {
@@ -237,6 +230,16 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
 
   ImGui::End();
 };
+}
+
+void AppInit()
+{
+  textureSelection = getTexture("data/rect.png");
+  textureBackground = getTexture("data/full.png");
+  textureHover = getTexture("data/hover.png");
+
+  GameInit();
+}
 
 void AppFrame(ImVec2 size)
 {
