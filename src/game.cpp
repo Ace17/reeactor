@@ -22,7 +22,7 @@ float Entity::pressure()
 namespace
 {
 const char* g_finishMessage = nullptr;
-auto const TAU = 3.1415f * 2.0f;
+auto const TAU = 6.28318530717958647693;
 
 float blend(float alpha, float a, float b)
 {
