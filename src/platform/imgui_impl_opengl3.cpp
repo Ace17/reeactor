@@ -465,7 +465,7 @@ void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
   glScissor(last_scissor_box[0], last_scissor_box[1], (GLsizei)last_scissor_box[2], (GLsizei)last_scissor_box[3]);
 }
 
-bool ImGui_ImplOpenGL3_CreateFontsTexture()
+static bool CreateFontsTexture()
 {
   // Build texture atlas
   ImGuiIO& io = ImGui::GetIO();
@@ -494,7 +494,7 @@ bool ImGui_ImplOpenGL3_CreateFontsTexture()
   return true;
 }
 
-void ImGui_ImplOpenGL3_DestroyFontsTexture()
+static void DestroyFontsTexture()
 {
   if(g_FontTexture)
   {
@@ -716,7 +716,7 @@ bool ImGui_ImplOpenGL3_CreateDeviceObjects()
   glGenBuffers(1, &g_VboHandle);
   glGenBuffers(1, &g_ElementsHandle);
 
-  ImGui_ImplOpenGL3_CreateFontsTexture();
+  CreateFontsTexture();
 
   // Restore modified GL state
   glBindTexture(GL_TEXTURE_2D, last_texture);
@@ -770,7 +770,7 @@ void ImGui_ImplOpenGL3_DestroyDeviceObjects()
     g_ShaderHandle = 0;
   }
 
-  ImGui_ImplOpenGL3_DestroyFontsTexture();
+  DestroyFontsTexture();
 }
 
 #define STB_IMAGE_IMPLEMENTATION
