@@ -94,6 +94,150 @@ void ImageRotated(ImTextureID tex_id, ImVec2 size, float angle)
   ImGui::GetWindowDrawList()->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
 }
 
+const int H = 512;
+
+void windowReactorControl(ImVec2 size)
+{
+  ImGui::SetNextWindowPos(ImVec2(0, 0));
+  ImGui::SetNextWindowSize(ImVec2(H, size.y));
+  ImGui::Begin("Reactor control", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+  if(g_selection)
+  {
+    ImGui::Text("Name: %s", g_selection->id.c_str());
+    ImGui::Text("Type: %s", g_selection->name());
+    ImGui::Text("");
+
+    for(auto& prop : g_selection->introspect())
+    {
+      switch(prop.type)
+      {
+      case Type::Float:
+
+        if(prop.readOnly)
+          ImGui::Text("%s: %.2f", prop.name, *(float*)prop.pointer);
+        else
+          ImGui::SliderFloat(prop.name, (float*)prop.pointer, 0, 1);
+
+        break;
+      case Type::Bool:
+        ImGui::Checkbox(prop.name, (bool*)prop.pointer);
+        break;
+      }
+    }
+  }
+  else
+  {
+    ImGui::Text("Please select an element from the diagram");
+  }
+
+  ImGui::End();
+}
+
+void windowReactorDiagram(ImVec2 size, const char* msg)
+{
+  auto absMousePos = ImGui::GetMousePos();
+  const auto origin = ImVec2(H, 0);
+  ImGui::SetNextWindowPos(origin);
+  ImGui::SetNextWindowSize(ImVec2(size.x - H, size.y));
+  ImGui::SetNextWindowBgAlpha(0.1);
+  ImGui::Begin("Reactor diagram", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+  const auto scrollPos = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
+  const auto mousePos = absMousePos - origin + scrollPos;
+
+  ImGui::SetCursorPos({});
+  ImGui::Image((void*)textureBackground, ImVec2(1024, 1024));
+
+  if(g_debug)
+    ImGui::Text("Temperature display");
+
+  for(auto& entity : g_entities)
+  {
+    ImVec2 entityPos = toImVec2(entity->pos) * SCALE;
+    ImVec2 entitySize = toImVec2(entity->size()) * SCALE;
+
+    ImGui::SetCursorPos(entityPos);
+    ImGui::Image((void*)getTexture("data/pipe.png"), entitySize);
+
+    if(auto texture = entity->texture())
+    {
+      ImGui::SetCursorPos(entityPos);
+      ImGui::Image((void*)getTexture(texture), entitySize);
+    }
+
+    if(auto texture2 = entity->texture2())
+    {
+      ImGui::SetCursorPos(entityPos + entitySize * 0.5);
+      ImageRotated((void*)getTexture(texture2), entitySize, entity->texture2angle());
+    }
+
+    if(entity->selectable() && !msg)
+    {
+      bool mouseOver = isPointInRect(mousePos, entityPos, entitySize);
+
+      if(entity.get() == g_selection)
+      {
+        ImGui::SetCursorPos(entityPos);
+        ImGui::Image((void*)textureSelection, entitySize);
+      }
+      else if(mouseOver)
+      {
+        ImGui::SetCursorPos(entityPos);
+        ImGui::Image((void*)textureHover, entitySize);
+
+        if(ImGui::IsMouseClicked(0))
+          g_selection = entity.get();
+      }
+
+      // show tooltip
+      if(mouseOver)
+      {
+        ImGui::BeginTooltip();
+        ImGui::Text("%s", entity->name());
+        ImGui::Text("%s", entity->id.c_str());
+
+        for(auto& prop : entity->introspect())
+        {
+          switch(prop.type)
+          {
+          case Type::Float:
+            ImGui::Text("%s: %.2f", prop.name, *(float*)prop.pointer);
+            break;
+          case Type::Bool:
+            ImGui::Text("%s: %s", prop.name, *(bool*)prop.pointer ? "on" : "off");
+            break;
+          }
+        }
+
+        ImGui::EndTooltip();
+      }
+    }
+
+    if(g_debug)
+    {
+      uint8_t red = (int)clamp(entity->temperature(), 0, 255);
+      ImGui::GetWindowDrawList()->AddRectFilled(origin - scrollPos + entityPos, origin - scrollPos + entityPos + entitySize, 0x80000000 | red);
+      ImGui::SetCursorPos(entityPos);
+      ImGui::Text("P=%.2f", entity->pressure());
+      ImGui::SetCursorPos(entityPos + ImVec2(0, -16));
+      ImGui::Text("N=%.2f", entity->fluidQuantity() * 0.001);
+    }
+  }
+
+  if(msg)
+  {
+    ImGui::SetCursorPos(size * 0.5 - origin);
+    ImGui::Text("GAME FINISHED: %s", msg);
+    ImGui::SetCursorPos(size * 0.5 - origin + ImVec2(0, 16));
+    ImGui::Text("THANKS FOR PLAYING!");
+    ImGui::SetCursorPos(size * 0.5 - origin + ImVec2(0, 32));
+    ImGui::Text("PRESS 'R' TO PLAY AGAIN");
+  }
+
+  ImGui::End();
+};
+
 void AppFrame(ImVec2 size)
 {
   auto msg = IsGameFinished();
@@ -113,146 +257,7 @@ void AppFrame(ImVec2 size)
   if(ImGui::IsKeyPressed(SDL_SCANCODE_SPACE))
     g_debug = !g_debug;
 
-  auto absMousePos = ImGui::GetMousePos();
-  const int H = 512;
-
-  {
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(H, size.y));
-    ImGui::Begin("Reactor control", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-
-    if(g_selection)
-    {
-      ImGui::Text("Name: %s", g_selection->id.c_str());
-      ImGui::Text("Type: %s", g_selection->name());
-      ImGui::Text("");
-
-      for(auto& prop : g_selection->introspect())
-      {
-        switch(prop.type)
-        {
-        case Type::Float:
-
-          if(prop.readOnly)
-            ImGui::Text("%s: %.2f", prop.name, *(float*)prop.pointer);
-          else
-            ImGui::SliderFloat(prop.name, (float*)prop.pointer, 0, 1);
-
-          break;
-        case Type::Bool:
-          ImGui::Checkbox(prop.name, (bool*)prop.pointer);
-          break;
-        }
-      }
-    }
-    else
-    {
-      ImGui::Text("Please select an element from the diagram");
-    }
-
-    ImGui::End();
-  }
-
-  {
-    const auto origin = ImVec2(H, 0);
-    ImGui::SetNextWindowPos(origin);
-    ImGui::SetNextWindowSize(ImVec2(size.x - H, size.y));
-    ImGui::SetNextWindowBgAlpha(0.1);
-    ImGui::Begin("Reactor diagram", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-
-    const auto scrollPos = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
-    const auto mousePos = absMousePos - origin + scrollPos;
-
-    ImGui::SetCursorPos({});
-    ImGui::Image((void*)textureBackground, ImVec2(1024, 1024));
-
-    if(g_debug)
-      ImGui::Text("Temperature display");
-
-    for(auto& entity : g_entities)
-    {
-      ImVec2 entityPos = toImVec2(entity->pos) * SCALE;
-      ImVec2 entitySize = toImVec2(entity->size()) * SCALE;
-
-      ImGui::SetCursorPos(entityPos);
-      ImGui::Image((void*)getTexture("data/pipe.png"), entitySize);
-
-      if(auto texture = entity->texture())
-      {
-        ImGui::SetCursorPos(entityPos);
-        ImGui::Image((void*)getTexture(texture), entitySize);
-      }
-
-      if(auto texture2 = entity->texture2())
-      {
-        ImGui::SetCursorPos(entityPos + entitySize * 0.5);
-        ImageRotated((void*)getTexture(texture2), entitySize, entity->texture2angle());
-      }
-
-      if(entity->selectable() && !msg)
-      {
-        bool mouseOver = isPointInRect(mousePos, entityPos, entitySize);
-
-        if(entity.get() == g_selection)
-        {
-          ImGui::SetCursorPos(entityPos);
-          ImGui::Image((void*)textureSelection, entitySize);
-        }
-        else if(mouseOver)
-        {
-          ImGui::SetCursorPos(entityPos);
-          ImGui::Image((void*)textureHover, entitySize);
-
-          if(ImGui::IsMouseClicked(0))
-            g_selection = entity.get();
-        }
-
-        // show tooltip
-        if(mouseOver)
-        {
-          ImGui::BeginTooltip();
-          ImGui::Text("%s", entity->name());
-          ImGui::Text("%s", entity->id.c_str());
-
-          for(auto& prop : entity->introspect())
-          {
-            switch(prop.type)
-            {
-            case Type::Float:
-              ImGui::Text("%s: %.2f", prop.name, *(float*)prop.pointer);
-              break;
-            case Type::Bool:
-              ImGui::Text("%s: %s", prop.name, *(bool*)prop.pointer ? "on" : "off");
-              break;
-            }
-          }
-
-          ImGui::EndTooltip();
-        }
-      }
-
-      if(g_debug)
-      {
-        uint8_t red = (int)clamp(entity->temperature(), 0, 255);
-        ImGui::GetWindowDrawList()->AddRectFilled(origin - scrollPos + entityPos, origin - scrollPos + entityPos + entitySize, 0x80000000 | red);
-        ImGui::SetCursorPos(entityPos);
-        ImGui::Text("P=%.2f", entity->pressure());
-        ImGui::SetCursorPos(entityPos + ImVec2(0, -16));
-        ImGui::Text("N=%.2f", entity->fluidQuantity() * 0.001);
-      }
-    }
-
-    if(msg)
-    {
-      ImGui::SetCursorPos(size * 0.5 - origin);
-      ImGui::Text("GAME FINISHED: %s", msg);
-      ImGui::SetCursorPos(size * 0.5 - origin + ImVec2(0, 16));
-      ImGui::Text("THANKS FOR PLAYING!");
-      ImGui::SetCursorPos(size * 0.5 - origin + ImVec2(0, 32));
-      ImGui::Text("PRESS 'R' TO PLAY AGAIN");
-    }
-
-    ImGui::End();
-  }
+  windowReactorControl(size);
+  windowReactorDiagram(size, msg);
 }
 
