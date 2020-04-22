@@ -26,41 +26,46 @@ inline ImVec2 operator * (ImVec2 a, float b) { return ImVec2(a.x * b, a.y * b); 
 inline ImVec2 operator - (ImVec2 a, ImVec2 b) { return ImVec2(a.x - b.x, a.y - b.y); }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Texture cache
 
-const float SCALE = 64.0;
-
-std::map<const char*, intptr_t> textures;
-intptr_t textureSelection;
-intptr_t textureBackground;
-intptr_t textureHover;
-
-Entity* g_selection;
-
-ImVec2 toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
-
-void AppInit()
-{
-  textureSelection = LoadTextureFromFile("data/rect.png");
-  textureBackground = LoadTextureFromFile("data/full.png");
-  textureHover = LoadTextureFromFile("data/hover.png");
-
-  GameInit();
-}
+std::map<const char*, intptr_t> textureCache;
 
 intptr_t getTexture(const char* path)
 {
-  auto i = textures.find(path);
+  auto i = textureCache.find(path);
 
-  if(i == textures.end())
+  if(i == textureCache.end())
   {
-    textures[path] = LoadTextureFromFile(path);
-    i = textures.find(path);
+    textureCache[path] = LoadTextureFromFile(path);
+    i = textureCache.find(path);
   }
 
   return i->second;
 }
 
-static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)
+///////////////////////////////////////////////////////////////////////////////
+
+const float SCALE = 64.0;
+
+intptr_t textureSelection;
+intptr_t textureBackground;
+intptr_t textureHover;
+
+Entity* g_selection;
+bool g_debug;
+
+ImVec2 toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
+
+void AppInit()
+{
+  textureSelection = getTexture("data/rect.png");
+  textureBackground = getTexture("data/full.png");
+  textureHover = getTexture("data/hover.png");
+
+  GameInit();
+}
+
+inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)
 {
   return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
 }
@@ -88,8 +93,6 @@ void ImageRotated(ImTextureID tex_id, ImVec2 size, float angle)
 
   ImGui::GetWindowDrawList()->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
 }
-
-bool g_debug;
 
 void AppFrame(ImVec2 size)
 {
