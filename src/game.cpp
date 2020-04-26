@@ -19,6 +19,11 @@ float Entity::pressure()
   return section ? section->P : 0;
 }
 
+float Entity::flux0()
+{
+  return section ? section->flux0 : 0;
+}
+
 namespace
 {
 const char* g_finishMessage = nullptr;
@@ -216,7 +221,7 @@ struct EFlowMeter : Entity
   void tick() override
   {
     flow = blend(0.1, flow, section->flux0);
-    angle += flow * 0.05;
+    angle += flow * 0.005;
 
     if(angle > TAU)
       angle -= TAU;
@@ -495,8 +500,8 @@ void GameInit()
 
   PrimaryHeatExchanger->other = SecondaryHeatExchanger;
 
-  buildPrimaryCircuit(PrimaryHeatExchanger);
   buildSecondaryCircuit(SecondaryHeatExchanger);
+  buildPrimaryCircuit(PrimaryHeatExchanger);
 }
 
 void GameTick()

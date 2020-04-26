@@ -52,6 +52,7 @@ const float SCALE = 64.0;
 intptr_t textureSelection;
 intptr_t textureBackground;
 intptr_t textureHover;
+intptr_t textureFlow;
 
 Entity* g_selection;
 bool g_debug;
@@ -209,6 +210,21 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
 
     if(g_debug)
     {
+      // flow drawing
+      {
+        static std::map<Entity*, float> u;
+        auto& phase = u[entity.get()];
+
+        phase += entity->flux0() * 0.001;
+        if(phase > 1.0)
+          phase -= 1.0;
+
+        ImGui::SetCursorPos(entityPos);
+        auto uv0 = ImVec2(0 - phase, 0);
+        auto uv1 = ImVec2(1 - phase, 1);
+        ImGui::Image((void*)textureFlow, entitySize, uv0, uv1);
+      }
+
       uint8_t red = (int)clamp(entity->temperature(), 0, 255);
       ImGui::GetWindowDrawList()->AddRectFilled(origin - scrollPos + entityPos, origin - scrollPos + entityPos + entitySize, 0x80000000 | red);
       ImGui::SetCursorPos(entityPos);
@@ -237,6 +253,7 @@ void AppInit()
   textureSelection = getTexture("data/rect.png");
   textureBackground = getTexture("data/full.png");
   textureHover = getTexture("data/hover.png");
+  textureFlow = getTexture("data/flowalpha.png");
 
   GameInit();
 }

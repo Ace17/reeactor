@@ -54,6 +54,7 @@ struct Entity
   float fluidQuantity();
   float temperature();
   float pressure();
+  float flux0();
   virtual void tick() {};
   virtual bool selectable() const { return true; }
   virtual Vec2f size() const { return Vec2f(1, 1); }
