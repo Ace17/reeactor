@@ -6,7 +6,7 @@ struct Section
 {
   // user-updated quantities
   float selfFlux = 0; // set to non-zero for pumps
-  float fluxRatio = 1; // set to less than 0 for valves
+  float damping = 0.99; // set to less 0 for valves
 
   // simulator-updated quantities
   float n = 0.0; // molecule count

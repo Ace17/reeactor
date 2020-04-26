@@ -21,8 +21,8 @@ void simulate(Circuit& circuit)
   {
     auto& s0 = *conn.sections[0];
     auto& s1 = *conn.sections[1];
-    conn.flux = s0.P - s1.P + s0.selfFlux;
-    conn.flux *= s0.fluxRatio;
+    conn.flux += (s0.P - s1.P + s0.selfFlux) * 0.1;
+    conn.flux *= s0.damping;
   }
 
   // apply flux: update N

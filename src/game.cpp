@@ -270,7 +270,7 @@ struct EValve : Entity
 {
   void tick() override
   {
-    section->fluxRatio = open;
+    section->damping = open;
   }
 
   const char* texture() const override { return nullptr; }

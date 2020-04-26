@@ -35,12 +35,13 @@ void mainWindow(ImVec2 size)
 
   auto pos = ImVec2(100, size.y / 2);
 
-  static double t = 0;
-  t += 0.01;
-
   {
     auto& s = g_circuit.sections.front();
-    ImGui::SliderFloat("SelfFlux", &s.selfFlux, 0, 10000);
+    ImGui::SliderFloat("SelfFlux", &s.selfFlux, 0, 1000);
+    ImGui::SliderFloat("Temperature", &s.T, 0, 200);
+
+    auto& sMid = g_circuit.sections[g_circuit.sections.size()*3/4];
+    ImGui::SliderFloat("MidDamping", &sMid.damping, 0, 1);
   }
 
   static std::vector<float> u;
@@ -50,7 +51,7 @@ void mainWindow(ImVec2 size)
   {
     auto& s = g_circuit.sections[i];
 
-    u[i] += s.flux0 * 0.01;
+    u[i] += s.flux0 * 0.001;
     if(u[i] > 1.0)
       u[i] -= 1.0;
 
@@ -81,18 +82,15 @@ void AppInit()
     s.T = 25;
   }
 
-  for(int i=0;i+1 < (int)g_circuit.sections.size();++i)
+  for(int i=0;i < (int)g_circuit.sections.size();++i)
   {
+    int i0 = (i+0)%g_circuit.sections.size();
+    int i1 = (i+1)%g_circuit.sections.size();
     connectSections(
         g_circuit,
-        g_circuit.sections[i],
-        g_circuit.sections[i+1]);
+        g_circuit.sections[i0],
+        g_circuit.sections[i1]);
   }
-
-  connectSections(
-      g_circuit,
-      g_circuit.sections.back(),
-      g_circuit.sections.front());
 }
 
 void AppFrame(ImVec2 size)
