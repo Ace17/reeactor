@@ -334,6 +334,7 @@ void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
 
   auto ReactorCore = Spawn(std::make_unique<EReactor>());
   ReactorCore->id = "Reactor Core";
+  ReactorCore->controlRods = 0;
 
   auto HotHeatSensor = Spawn(std::make_unique<EHeatSink>());
   HotHeatSensor->id = "[Primary Circuit] Hot Heat Sensor";
