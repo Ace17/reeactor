@@ -9,6 +9,8 @@ void connectSections(Circuit& circuit, Section& a, Section& b)
 
 void simulate(Circuit& circuit)
 {
+  const float dt = 1.0;
+
   // compute section pressures
   for(auto& s : circuit.sections)
   {
@@ -21,7 +23,7 @@ void simulate(Circuit& circuit)
   {
     auto& s0 = *conn.sections[0];
     auto& s1 = *conn.sections[1];
-    conn.flux += (s0.P - s1.P + s0.selfFlux) * 0.1;
+    conn.flux += (s0.P - s1.P + s0.selfFlux) * 0.1 * dt;
     conn.flux *= s0.damping;
   }
 
@@ -30,33 +32,33 @@ void simulate(Circuit& circuit)
   {
     auto* s0 = conn.sections[0];
     auto* s1 = conn.sections[1];
-    auto flux = conn.flux;
+    auto dMass = conn.flux * dt;
 
-    if(flux < 0)
+    if(dMass < 0)
     {
-      flux = -flux;
+      dMass = -dMass;
       std::swap(s0, s1);
     }
 
     // at this point,
     // we're transfering hot molecules from s0 to s1
-    assert(flux == flux);
-    assert(flux >= 0);
+    assert(dMass == dMass);
+    assert(dMass >= 0);
 
     // don't transfer more molecules than available in s0
-    flux = std::min(flux, s0->mass);
+    dMass = std::min(dMass, s0->mass);
 
     // update s1 temperature
-    if(flux > 0)
-      s1->T = (s1->T * s1->mass + s0->T * flux) / (s1->mass + flux);
+    if(dMass > 0)
+      s1->T = (s1->T * s1->mass + s0->T * dMass) / (s1->mass + dMass);
 
     assert(s1->T == s1->T);
     assert(s1->T >= 0);
 
-    s0->mass -= flux;
-    s1->mass += flux;
+    s0->mass -= dMass;
+    s1->mass += dMass;
 
-    conn.flux = conn.flux > 0 ? flux : -flux;
+    conn.flux = (conn.flux > 0 ? dMass : -dMass) / dt;
 
     // update flux0 for monitoring
     conn.sections[0]->flux0 = conn.flux;
