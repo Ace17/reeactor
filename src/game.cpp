@@ -58,7 +58,7 @@ struct EReactor : Entity
 {
   void tick() override
   {
-    section->T += 4.0 * controlRods;
+    section->T += 8.0 * controlRods;
     temperature = section->T;
 
     if(section->T > 300)
@@ -77,7 +77,7 @@ struct EReactor : Entity
     };
   }
 
-  float controlRods = 0.1;
+  float controlRods = 0;
   float temperature = 200.0;
 };
 
@@ -85,12 +85,15 @@ struct ETurbine : Entity
 {
   void tick() override
   {
-    section->T = blend(0.99, section->T, 20.0); // heat dissipation
-
+    // heat dissipation
     if(section->T > 25)
-      speed += section->T * 0.001;
+      section->T -= 0.2;
+
+    if(section->T > 100)
+      speed += (section->T - 100) * 0.001;
 
     speed *= 0.99; // friction
+    temperature = section->T;
   }
 
   Vec2f size() const override { return Vec2f(2, 3); }
@@ -101,10 +104,12 @@ struct ETurbine : Entity
   {
     return {
       Property{ "Angular Speed", Type::Float, (void*)&speed, true },
+      Property{ "Temperature Reading", Type::Float, (void*)&temperature, true },
     };
   }
 
   float speed = 0;
+  float temperature = 0;
 };
 
 struct EGenerator : Entity
@@ -249,7 +254,7 @@ struct EHeatExchanger : Entity
     if(other)
     {
       double delta = other->section->T - section->T;
-      delta *= 0.1;
+      delta *= 0.2;
       other->section->T -= delta;
       section->T += delta;
     }
@@ -501,6 +506,10 @@ void GameInit()
   PrimaryHeatExchanger->other = SecondaryHeatExchanger;
 
   buildSecondaryCircuit(SecondaryHeatExchanger);
+
+  for(auto& s : g_circuit.sections)
+    s.n *= 4; // augment the amount of water in the secondary circuit
+
   buildPrimaryCircuit(PrimaryHeatExchanger);
 }
 

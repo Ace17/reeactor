@@ -216,6 +216,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
         auto& phase = u[entity.get()];
 
         phase += entity->flux0() * 0.001;
+
         if(phase > 1.0)
           phase -= 1.0;
 
