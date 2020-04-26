@@ -9,7 +9,7 @@ struct Section
   float damping = 0.99; // set to less 0 for valves
 
   // simulator-updated quantities
-  float n = 0.0; // molecule count
+  float mass = 0.0; // mass of fluid inside the section
   float T = 1.0; // temperature
   float flux0; // flux of the first connection
 

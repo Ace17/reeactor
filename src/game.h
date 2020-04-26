@@ -51,7 +51,7 @@ struct Entity
   Vec2f pos {};
   std::string id;
   Section* section = nullptr;
-  float fluidQuantity();
+  float mass();
   float temperature();
   float pressure();
   float flux0();

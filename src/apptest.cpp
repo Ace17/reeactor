@@ -79,7 +79,7 @@ void AppInit()
 
   for(auto& s : g_circuit.sections)
   {
-    s.n = 1000;
+    s.mass = 1000;
     s.T = 25;
   }
 

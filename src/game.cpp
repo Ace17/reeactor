@@ -4,9 +4,9 @@
 
 std::vector<std::unique_ptr<Entity>> g_entities;
 
-float Entity::fluidQuantity()
+float Entity::mass()
 {
-  return section ? section->n : 0;
+  return section ? section->mass : 0;
 }
 
 float Entity::temperature()
@@ -303,7 +303,7 @@ T* Spawn(std::unique_ptr<T> entity)
   T* r = entity.get();
   g_circuit.sections.push_back({});
   entity->section = &g_circuit.sections.back();
-  entity->section->n = 1000; // put some water
+  entity->section->mass = 1000; // put some water
   entity->section->T = 25; // room temperature
   g_entities.push_back(std::move(entity));
   return r;
@@ -508,7 +508,7 @@ void GameInit()
   buildSecondaryCircuit(SecondaryHeatExchanger);
 
   for(auto& s : g_circuit.sections)
-    s.n *= 4; // augment the amount of water in the secondary circuit
+    s.mass *= 4; // augment the amount of water in the secondary circuit
 
   buildPrimaryCircuit(PrimaryHeatExchanger);
 }

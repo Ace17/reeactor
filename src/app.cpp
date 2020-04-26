@@ -233,7 +233,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
       ImGui::SetCursorPos(entityPos);
       ImGui::Text("P=%.2f", entity->pressure());
       ImGui::SetCursorPos(entityPos + ImVec2(0, -16));
-      ImGui::Text("N=%.2f", entity->fluidQuantity() * 0.001);
+      ImGui::Text("m=%.2f", entity->mass() * 0.001);
     }
   }
 

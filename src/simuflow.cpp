@@ -12,8 +12,8 @@ void simulate(Circuit& circuit)
   // compute section pressures
   for(auto& s : circuit.sections)
   {
-    assert(s.n >= 0);
-    s.P = (s.n * 0.003 * s.T) / s.V;
+    assert(s.mass >= 0);
+    s.P = (s.mass * 0.003 * s.T) / s.V;
   }
 
   // update flux
@@ -44,17 +44,17 @@ void simulate(Circuit& circuit)
     assert(flux >= 0);
 
     // don't transfer more molecules than available in s0
-    flux = std::min(flux, s0->n);
+    flux = std::min(flux, s0->mass);
 
     // update s1 temperature
     if(flux > 0)
-      s1->T = (s1->T * s1->n + s0->T * flux) / (s1->n + flux);
+      s1->T = (s1->T * s1->mass + s0->T * flux) / (s1->mass + flux);
 
     assert(s1->T == s1->T);
     assert(s1->T >= 0);
 
-    s0->n -= flux;
-    s1->n += flux;
+    s0->mass -= flux;
+    s1->mass += flux;
 
     conn.flux = conn.flux > 0 ? flux : -flux;
 
