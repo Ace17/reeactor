@@ -189,7 +189,7 @@ struct EManometer : Entity
 
   const char* texture() const override { return "data/manometer.png"; }
   virtual const char* texture2() const { return "data/manometer_pin.png"; };
-  virtual float texture2angle() const { return clamp(pressure * 0.03, 0.1, TAU - 0.1); }
+  virtual float texture2angle() const { return clamp(pressure * 0.01, 0.1, TAU - 0.1); }
 
   const char* name() const override { return "Pressure Manometer"; };
   std::vector<Property> introspect() const override
