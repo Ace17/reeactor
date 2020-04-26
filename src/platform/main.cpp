@@ -126,6 +126,7 @@ int main(int, char**)
 
   // Main loop
   bool done = false;
+  int ticks = SDL_GetTicks();
 
   while(!done)
   {
@@ -152,8 +153,10 @@ int main(int, char**)
     ImGui_ImplSDL2_NewFrame(window);
     ImGui::NewFrame();
 
-    extern void AppFrame(ImVec2);
-    AppFrame(io.DisplaySize);
+    extern void AppFrame(ImVec2 size, int ticks);
+    auto now = SDL_GetTicks();
+    AppFrame(io.DisplaySize, now - ticks);
+    ticks = now;
 
     // Rendering
     ImGui::Render();

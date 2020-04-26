@@ -9,6 +9,8 @@
 
 namespace
 {
+int gameTicks = 0;
+auto const GAME_PERIOD_IN_TICKS = 20;
 ///////////////////////////////////////////////////////////////////////////////
 // ImVec2 primitives
 
@@ -259,12 +261,20 @@ void AppInit()
   GameInit();
 }
 
-void AppFrame(ImVec2 size)
+void AppFrame(ImVec2 size, int deltaTicks)
 {
   auto msg = IsGameFinished();
 
   if(!msg)
-    GameTick();
+  {
+    gameTicks += deltaTicks;
+
+    while(gameTicks > GAME_PERIOD_IN_TICKS)
+    {
+      GameTick();
+      gameTicks -= GAME_PERIOD_IN_TICKS;
+    }
+  }
 
   if(msg)
     g_debug = false;
