@@ -55,6 +55,7 @@ struct Entity
 {
   virtual ~Entity() = default;
   Vec2f pos {};
+  float angle = 0;
   std::string id;
   Section* section = nullptr;
   float mass();

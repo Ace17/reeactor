@@ -28,6 +28,7 @@ namespace
 {
 const char* g_finishMessage = nullptr;
 auto const TAU = 6.28318530717958647693;
+auto const PI = TAU * 0.5;
 
 float blend(float alpha, float a, float b)
 {
@@ -264,16 +265,16 @@ struct EFlowMeter : Entity
   void tick() override
   {
     flow = blend(0.1, flow, section->flux0);
-    angle += flow * 0.005;
+    phase += flow * 0.005;
 
-    if(angle > TAU)
-      angle -= TAU;
+    if(phase > TAU)
+      phase -= TAU;
   }
 
   std::vector<Sprite> sprite() const override
   {
     return {
-      { "data/flowmeter.png" }, { "data/flowmeter_pin.png", -angle }
+      { "data/flowmeter.png" }, { "data/flowmeter_pin.png", -phase }
     };
   }
 
@@ -286,7 +287,7 @@ struct EFlowMeter : Entity
   }
 
   float flow = 0;
-  float angle = 0;
+  float phase = 0;
 };
 
 struct EHeatExchanger : Entity
@@ -365,17 +366,24 @@ T* Spawn(std::unique_ptr<T> entity)
 void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
 {
   auto MainPrimary = Spawn(std::make_unique<EPipe>());
+  MainPrimary->angle = PI;
 
   auto Pipe1 = Spawn(std::make_unique<EPipe>());
+  Pipe1->angle = PI;
   auto Pipe2 = Spawn(std::make_unique<EPipe>());
+  Pipe2->angle = PI;
   auto Pipe3 = Spawn(std::make_unique<EPipe>());
+  Pipe3->angle = PI;
   auto Pipe4 = Spawn(std::make_unique<EPipe>());
+  Pipe4->angle = PI;
 
   auto FlowMeter = Spawn(std::make_unique<EFlowMeter>());
   FlowMeter->id = "[Primary Circuit] Flow Meter";
+  FlowMeter->angle = PI;
 
   auto ColdPressure = Spawn(std::make_unique<EManometer>());
   ColdPressure->id = "[Primary Circuit] Cold Pressure";
+  ColdPressure->angle = PI;
 
   auto PreValve1 = Spawn(std::make_unique<EValve>());
   PreValve1->id = "[Primary Circuit] Main Pre-Valve 1";
@@ -471,6 +479,7 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
 {
   auto Turbine = Spawn(std::make_unique<ETurbine>());
   Turbine->id = "Turbine #1";
+  Turbine->angle = PI;
 
   auto Generator = Spawn(std::make_unique<EGenerator>());
   Generator->turbine = Turbine;
@@ -478,9 +487,11 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
 
   auto FlowMeter = Spawn(std::make_unique<EFlowMeter>());
   FlowMeter->id = "[Secondary Circuit] Flow Meter";
+  FlowMeter->angle = PI;
 
   auto ColdPressure = Spawn(std::make_unique<EManometer>());
   ColdPressure->id = "[Secondary Circuit] Cold Pressure";
+  ColdPressure->angle = PI;
 
   auto PreValve1 = Spawn(std::make_unique<EValve>());
   PreValve1->id = "[Secondary Circuit] Main Pre-Valve 1";
@@ -565,6 +576,7 @@ void GameInit()
 
   auto PrimaryHeatExchanger = Spawn(std::make_unique<EHeatExchanger>());
   PrimaryHeatExchanger->id = "Primary Heat Exchanger";
+  PrimaryHeatExchanger->angle = PI;
 
   auto SecondaryHeatExchanger = Spawn(std::make_unique<EHeatExchanger>());
   SecondaryHeatExchanger->id = "Secondary Heat Exchanger";

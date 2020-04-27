@@ -66,7 +66,7 @@ inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)
   return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
 }
 
-void ImageRotated(ImTextureID tex_id, ImVec2 size, float angle)
+void ImageRotated(ImTextureID tex_id, ImVec2 size, float angle, ImVec2 uv0 = ImVec2(0, 0), ImVec2 uv1 = ImVec2(1, 1))
 {
   ImVec2 center = ImGui::GetCursorScreenPos();
 
@@ -81,10 +81,10 @@ void ImageRotated(ImTextureID tex_id, ImVec2 size, float angle)
   };
   ImVec2 uvs[4] =
   {
-    ImVec2(0.0f, 0.0f),
-    ImVec2(1.0f, 0.0f),
-    ImVec2(1.0f, 1.0f),
-    ImVec2(0.0f, 1.0f)
+    ImVec2(uv0.x, uv0.y),
+    ImVec2(uv1.x, uv0.y),
+    ImVec2(uv1.x, uv1.y),
+    ImVec2(uv0.x, uv1.y)
   };
 
   ImGui::GetWindowDrawList()->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], IM_COL32_WHITE);
@@ -159,7 +159,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
     for(auto& sprite : entity->sprite())
     {
       ImGui::SetCursorPos(entityPos + entitySize * 0.5);
-      ImageRotated((void*)getTexture(sprite.texture), entitySize, sprite.angle);
+      ImageRotated((void*)getTexture(sprite.texture), entitySize, sprite.angle + entity->angle);
     }
 
     if(entity->selectable() && !msg)
@@ -216,10 +216,10 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
         if(phase > 1.0)
           phase -= 1.0;
 
-        ImGui::SetCursorPos(entityPos);
+        ImGui::SetCursorPos(entityPos + entitySize * 0.5);
         auto uv0 = ImVec2(0 - phase, 0);
         auto uv1 = ImVec2(1 - phase, 1);
-        ImGui::Image((void*)textureFlow, entitySize, uv0, uv1);
+        ImageRotated((void*)textureFlow, entitySize, entity->angle, uv0, uv1);
       }
 
       uint8_t red = (int)clamp(entity->temperature(), 0, 255);
