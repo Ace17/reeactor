@@ -1,7 +1,12 @@
+// Simulation of fluid flowing inside pipes.
 #pragma once
 
 #include <vector>
 
+// A constant-volume section of the pipeline,
+// potentially connected to other sections.
+// Keeps track of the fluid mass and its temperature
+// inside the section.
 struct Section
 {
   // user-updated quantities

@@ -41,11 +41,11 @@ void simulate(Circuit& circuit)
     }
 
     // at this point,
-    // we're transfering hot molecules from s0 to s1
+    // we're transfering fluid from s0 to s1
     assert(dMass == dMass);
     assert(dMass >= 0);
 
-    // don't transfer more molecules than available in s0
+    // don't transfer more fluid than available in s0
     dMass = std::min(dMass, s0->mass);
 
     // update s1 temperature
