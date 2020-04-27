@@ -313,6 +313,11 @@ void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
 {
   auto MainPrimary = Spawn(std::make_unique<EPipe>());
 
+  auto Pipe1 = Spawn(std::make_unique<EPipe>());
+  auto Pipe2 = Spawn(std::make_unique<EPipe>());
+  auto Pipe3 = Spawn(std::make_unique<EPipe>());
+  auto Pipe4 = Spawn(std::make_unique<EPipe>());
+
   auto FlowMeter = Spawn(std::make_unique<EFlowMeter>());
   FlowMeter->id = "[Primary Circuit] Flow Meter";
 
@@ -358,6 +363,10 @@ void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
   // --------------------------------------
 
   const Vec2f origin = Vec2f(3, 6);
+  Pipe1->pos = Vec2f(5, 3) + origin;
+  Pipe2->pos = Vec2f(8, 3) + origin;
+  Pipe3->pos = Vec2f(9, 3) + origin;
+  Pipe4->pos = Vec2f(10, 3) + origin;
   MainPrimary->pos = Vec2f(4, 3) + origin;
   FlowMeter->pos = Vec2f(3, 3) + origin;
   ColdPressure->pos = Vec2f(2, 3) + origin;
@@ -388,7 +397,11 @@ void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
       HotHeatSensor,
       HotPressure,
       HotFlow,
+      Pipe4,
+      Pipe3,
+      Pipe2,
       HeatExchanger,
+      Pipe1,
       MainPrimary });
 
   // redundant pump
