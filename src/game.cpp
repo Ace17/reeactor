@@ -50,7 +50,13 @@ void connect(std::vector<Entity*> entities)
 struct EPipe : Entity
 {
   bool selectable() const override { return false; }
-  const char* texture() const override { return "data/pipe.png"; }
+  std::vector<Sprite> sprite() const
+  {
+    return {
+      { "data/pipe.png" }
+    };
+  }
+
   const char* name() const override { return "Water Pipe"; };
 };
 
@@ -66,7 +72,13 @@ struct EReactor : Entity
   }
 
   Vec2f size() const override { return Vec2f(2, 4); }
-  const char* texture() const override { return "data/reactor.png"; }
+  std::vector<Sprite> sprite() const
+  {
+    return {
+      { "data/reactor.png" }
+    };
+  }
+
   const char* name() const override { return "Reactor Core"; };
 
   std::vector<Property> introspect() const override
@@ -97,7 +109,13 @@ struct ETurbine : Entity
   }
 
   Vec2f size() const override { return Vec2f(2, 3); }
-  const char* texture() const override { return "data/turbine.png"; }
+  std::vector<Sprite> sprite() const
+  {
+    return {
+      { "data/turbine.png" }
+    };
+  }
+
   const char* name() const override { return "Steam Turbine"; };
 
   std::vector<Property> introspect() const override
@@ -124,7 +142,13 @@ struct EGenerator : Entity
   }
 
   Vec2f size() const override { return Vec2f(2, 1); }
-  const char* texture() const override { return "data/generator.png"; }
+  std::vector<Sprite> sprite() const
+  {
+    return {
+      { "data/generator.png" }
+    };
+  }
+
   const char* name() const override { return "Power Generator"; };
 
   std::vector<Property> introspect() const override
@@ -162,9 +186,13 @@ struct EPump : Entity
       angle -= TAU;
   }
 
-  const char* texture() const override { return "data/pump.png"; }
-  const char* texture2() const override { return "data/pump2.png"; }
-  float texture2angle() const override { return -angle; }
+  std::vector<Sprite> sprite() const
+  {
+    return {
+      { "data/pump.png" }, { "data/pump2.png", -angle }
+    };
+  }
+
   const char* name() const override { return "Water Pump"; };
   std::vector<Property> introspect() const override
   {
@@ -187,9 +215,13 @@ struct EManometer : Entity
     pressure = blend(0.1, pressure, section->P);
   }
 
-  const char* texture() const override { return "data/manometer.png"; }
-  virtual const char* texture2() const { return "data/manometer_pin.png"; };
-  virtual float texture2angle() const { return clamp(pressure * 0.01, 0.1, TAU - 0.1); }
+  std::vector<Sprite> sprite() const override
+  {
+    auto angle = clamp(pressure * 0.01, 0.1, TAU - 0.1);
+    return {
+      { "data/manometer.png" }, { "data/manometer_pin.png", angle }
+    };
+  }
 
   const char* name() const override { return "Pressure Manometer"; };
   std::vector<Property> introspect() const override
@@ -209,7 +241,13 @@ struct EHeatSink : Entity
     temperature = section->T;
   }
 
-  const char* texture() const override { return "data/heatsink.png"; }
+  std::vector<Sprite> sprite() const override
+  {
+    return {
+      { "data/heatsink.png" }
+    };
+  }
+
   const char* name() const override { return "Temperature Sensor"; };
   std::vector<Property> introspect() const override
   {
@@ -232,9 +270,13 @@ struct EFlowMeter : Entity
       angle -= TAU;
   }
 
-  const char* texture() const override { return "data/flowmeter.png"; }
-  virtual const char* texture2() const { return "data/flowmeter_pin.png"; };
-  virtual float texture2angle() const { return -angle; }
+  std::vector<Sprite> sprite() const override
+  {
+    return {
+      { "data/flowmeter.png" }, { "data/flowmeter_pin.png", -angle }
+    };
+  }
+
   const char* name() const override { return "Flow Meter"; };
   std::vector<Property> introspect() const override
   {
@@ -263,7 +305,14 @@ struct EHeatExchanger : Entity
   }
 
   Vec2f size() const override { return Vec2f(2, 1); }
-  const char* texture() const override { return "data/heatexchanger.png"; }
+
+  std::vector<Sprite> sprite() const override
+  {
+    return {
+      { "data/heatexchanger.png" }
+    };
+  }
+
   const char* name() const override { return "Heat Exchanger"; };
   std::vector<Property> introspect() const override
   {
@@ -283,9 +332,13 @@ struct EValve : Entity
     section->damping = open;
   }
 
-  const char* texture() const override { return nullptr; }
-  const char* texture2() const override { return "data/valve.png"; }
-  float texture2angle() const override { return open * -8.0; }
+  std::vector<Sprite> sprite() const override
+  {
+    return {
+      { "data/valve.png", open* -8.0f }
+    };
+  }
+
   const char* name() const override { return "Valve"; };
   std::vector<Property> introspect() const override
   {

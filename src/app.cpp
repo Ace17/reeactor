@@ -156,16 +156,10 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
     ImGui::SetCursorPos(entityPos);
     ImGui::Image((void*)getTexture("data/pipe.png"), entitySize);
 
-    if(auto texture = entity->texture())
-    {
-      ImGui::SetCursorPos(entityPos);
-      ImGui::Image((void*)getTexture(texture), entitySize);
-    }
-
-    if(auto texture2 = entity->texture2())
+    for(auto& sprite : entity->sprite())
     {
       ImGui::SetCursorPos(entityPos + entitySize * 0.5);
-      ImageRotated((void*)getTexture(texture2), entitySize, entity->texture2angle());
+      ImageRotated((void*)getTexture(sprite.texture), entitySize, sprite.angle);
     }
 
     if(entity->selectable() && !msg)

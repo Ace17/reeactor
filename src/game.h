@@ -45,6 +45,12 @@ struct Property
 
 struct Section;
 
+struct Sprite
+{
+  const char* texture;
+  float angle = 0;
+};
+
 struct Entity
 {
   virtual ~Entity() = default;
@@ -58,9 +64,7 @@ struct Entity
   virtual void tick() {};
   virtual bool selectable() const { return true; }
   virtual Vec2f size() const { return Vec2f(1, 1); }
-  virtual const char* texture() const = 0;
-  virtual const char* texture2() const { return nullptr; };
-  virtual float texture2angle() const { return 0; }
+  virtual std::vector<Sprite> sprite() const = 0;
   virtual const char* name() const = 0;
   virtual std::vector<Property> introspect() const { return {}; };
 };
