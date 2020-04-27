@@ -33,6 +33,7 @@ void simulate(Circuit& circuit)
     auto* s0 = conn.sections[0];
     auto* s1 = conn.sections[1];
     auto dMass = conn.flux * dt;
+    const auto sign = conn.flux > 0 ? 1.0f : -1.0f;
 
     if(dMass < 0)
     {
@@ -58,7 +59,7 @@ void simulate(Circuit& circuit)
     s0->mass -= dMass;
     s1->mass += dMass;
 
-    conn.flux = (conn.flux > 0 ? dMass : -dMass) / dt;
+    conn.flux = sign * (dMass / dt);
 
     // update flux0 for monitoring
     conn.sections[0]->flux0 = conn.flux;
