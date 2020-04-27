@@ -143,7 +143,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
   const auto mousePos = absMousePos - origin + scrollPos;
 
   ImGui::SetCursorPos({});
-  ImGui::Image((void*)textureBackground, ImVec2(1024, 1024));
+  ImGui::Image((void*)textureBackground, ImVec2(16 * SCALE, 16 * SCALE));
 
   if(g_debug)
     ImGui::Text("Temperature display");
