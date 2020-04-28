@@ -148,7 +148,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
   if(g_debug)
     ImGui::Text("Temperature display");
 
-  for(auto& entity : g_entities)
+  for(auto& entity : GameGetActors())
   {
     ImVec2 entityPos = toImVec2(entity->pos) * SCALE;
     ImVec2 entitySize = toImVec2(entity->size()) * SCALE;
@@ -166,7 +166,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
     {
       bool mouseOver = isPointInRect(mousePos, entityPos, entitySize);
 
-      if(entity.get() == g_selection)
+      if(entity == g_selection)
       {
         ImGui::SetCursorPos(entityPos);
         ImGui::Image((void*)textureSelection, entitySize);
@@ -177,7 +177,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
         ImGui::Image((void*)textureHover, entitySize);
 
         if(ImGui::IsMouseClicked(0))
-          g_selection = entity.get();
+          g_selection = entity;
       }
 
       // show tooltip
@@ -209,7 +209,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
       // flow drawing
       {
         static std::map<Entity*, float> u;
-        auto& phase = u[entity.get()];
+        auto& phase = u[entity];
 
         phase += entity->flux0() * 0.001;
 

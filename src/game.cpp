@@ -2,8 +2,6 @@
 #include "game.h"
 #include "simuflow.h"
 
-std::vector<std::unique_ptr<Entity>> g_entities;
-
 float Entity::mass()
 {
   return section ? section->mass : 0;
@@ -26,6 +24,7 @@ float Entity::flux0()
 
 namespace
 {
+std::vector<std::unique_ptr<Entity>> g_entities;
 const char* g_finishMessage = nullptr;
 auto const TAU = 6.28318530717958647693;
 auto const PI = TAU * 0.5;
@@ -590,6 +589,17 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
       ColdHeatSensor,
     });
 }
+}
+
+std::vector<Entity*> GameGetActors()
+{
+  std::vector<Entity*> r;
+  r.reserve(g_entities.size());
+
+  for(auto& entity : g_entities)
+    r.push_back(entity.get());
+
+  return r;
 }
 
 void GameInit()

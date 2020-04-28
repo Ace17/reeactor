@@ -70,7 +70,7 @@ struct Entity
   virtual std::vector<Property> introspect() const { return {}; };
 };
 
-extern std::vector<std::unique_ptr<Entity>> g_entities;
+extern std::vector<Entity*> GameGetActors();
 extern void GameInit();
 extern void GameTick();
 extern const char* IsGameFinished();
