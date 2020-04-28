@@ -36,6 +36,7 @@ function deliverBinaryVersion
   mv $tmpDir/$N/game.exe $tmpDir/$N/$N.exe
 
   # GNU/Linux binaries
+  CXXFLAGS="-include extra/glibc_version.h" \
   BIN=$tmpDir/bin/gnu \
     make -j`nproc` >/dev/null
 
