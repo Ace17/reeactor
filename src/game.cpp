@@ -94,16 +94,36 @@ struct EReactor : Entity
   float temperature = 200.0;
 };
 
-struct ETurbine : Entity
+struct ECoolingTower : Entity
 {
   void tick() override
   {
     // heat dissipation
-    if(section->T > 25)
-      section->T -= 0.2;
+    section->T = blend(0.99, section->T, 25);
+  }
 
+  Vec2f size() const override { return Vec2f(2, 2); }
+  std::vector<Sprite> sprite() const
+  {
+    return {
+      { "data/coolingtower.png" }
+    };
+  }
+
+  const char* name() const override { return "Cooling Tower"; };
+
+  std::vector<Property> introspect() const override
+  {
+    return {};
+  }
+};
+
+struct ETurbine : Entity
+{
+  void tick() override
+  {
     if(section->T > 100)
-      speed += (section->T - 100) * 0.001;
+      speed += (section->T - 100) * 0.01;
 
     speed *= 0.99; // friction
     temperature = section->T;
@@ -297,7 +317,7 @@ struct EHeatExchanger : Entity
     if(other)
     {
       double delta = other->section->T - section->T;
-      delta *= 0.2;
+      delta *= 0.4;
       other->section->T -= delta;
       section->T += delta;
     }
@@ -477,6 +497,10 @@ void buildPrimaryCircuit(EHeatExchanger* HeatExchanger)
 
 void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
 {
+  auto CoolingTower = Spawn(std::make_unique<ECoolingTower>());
+  CoolingTower->id = "Cooling Tower";
+  CoolingTower->angle = PI;
+
   auto Turbine = Spawn(std::make_unique<ETurbine>());
   Turbine->id = "Turbine #1";
   Turbine->angle = PI;
@@ -526,8 +550,9 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
 
   const Vec2f origin = Vec2f(3, 0);
 
-  Turbine->pos = Vec2f(6, 2) + origin;
-  Generator->pos = Vec2f(6, 1) + origin;
+  CoolingTower->pos = Vec2f(4, 2) + origin;
+  Turbine->pos = Vec2f(7, 2) + origin;
+  Generator->pos = Vec2f(7, 1) + origin;
   FlowMeter->pos = Vec2f(3, 3) + origin;
   ColdPressure->pos = Vec2f(2, 3) + origin;
   PreValve1->pos = Vec2f(1, 6) + origin;
@@ -544,6 +569,7 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
   // --------------------------------------
 
   connect({ Turbine,
+            CoolingTower,
             FlowMeter,
             ColdPressure,
             PreValve1,
