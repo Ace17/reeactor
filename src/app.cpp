@@ -56,7 +56,7 @@ intptr_t textureBackground;
 intptr_t textureHover;
 intptr_t textureFlow;
 
-Entity* g_selection;
+Actor* g_selection;
 bool g_debug;
 
 ImVec2 toImVec2(Vec2f v) { return ImVec2(v.x, v.y); }
@@ -208,7 +208,7 @@ void windowReactorDiagram(ImVec2 size, const char* msg)
     {
       // flow drawing
       {
-        static std::map<Entity*, float> u;
+        static std::map<Actor*, float> u;
         auto& phase = u[entity];
 
         phase += entity->flux0() * 0.001;

@@ -2,28 +2,34 @@
 #include "game.h"
 #include "simuflow.h"
 
-float Entity::mass()
-{
-  return section ? section->mass : 0;
-}
-
-float Entity::temperature()
-{
-  return section ? section->T : 0;
-}
-
-float Entity::pressure()
-{
-  return section ? section->P : 0;
-}
-
-float Entity::flux0()
-{
-  return section ? section->flux0 : 0;
-}
-
 namespace
 {
+struct Entity : Actor
+{
+  Section* section = nullptr;
+  virtual void tick() {};
+
+  float mass() override
+  {
+    return section ? section->mass : 0;
+  }
+
+  float temperature() override
+  {
+    return section ? section->T : 0;
+  }
+
+  float pressure() override
+  {
+    return section ? section->P : 0;
+  }
+
+  float flux0() override
+  {
+    return section ? section->flux0 : 0;
+  }
+};
+
 std::vector<std::unique_ptr<Entity>> g_entities;
 const char* g_finishMessage = nullptr;
 auto const TAU = 6.28318530717958647693;
@@ -591,9 +597,9 @@ void buildSecondaryCircuit(EHeatExchanger* HeatExchanger)
 }
 }
 
-std::vector<Entity*> GameGetActors()
+std::vector<Actor*> GameGetActors()
 {
-  std::vector<Entity*> r;
+  std::vector<Actor*> r;
   r.reserve(g_entities.size());
 
   for(auto& entity : g_entities)
