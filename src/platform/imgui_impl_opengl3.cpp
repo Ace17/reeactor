@@ -22,6 +22,10 @@ static int g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;                
 static int g_AttribLocationVtxPos = 0, g_AttribLocationVtxUV = 0, g_AttribLocationVtxColor = 0;// Vertex attributes location
 static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
 
+// (Optional) Called by Init/NewFrame/Shutdown
+bool ImGui_ImplOpenGL3_CreateDeviceObjects();
+void ImGui_ImplOpenGL3_DestroyDeviceObjects();
+
 // Functions
 bool ImGui_ImplOpenGL3_Init(const char* glsl_version)
 {
